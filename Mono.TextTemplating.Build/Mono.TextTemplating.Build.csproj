@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net6.0</TargetFrameworks>
+    <PackageId>T4.BuildTools</PackageId>
+    <Description>MSBuild build targets for the T4 templating language, a general-purpose way to generate text or code files using C#</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <!-- if the assemblies are in a subdirectory of the build folder then MSBuild can
+         end up loading Mono.TextTemplating.dll for the wrong runtime -->
+    <BuildOutputTargetFolder>buildTasks</BuildOutputTargetFolder>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="T4.BuildTools.props" PackagePath="build\$(PackageId).props" Pack="true"  />
+    <None Include="T4.BuildTools.targets" PackagePath="build\$(PackageId).targets" Pack="true" />
+    <None Include="multitargeting.props" PackagePath="buildMultiTargeting\$(PackageId).props" Pack="true" />
+    <None Include="multitargeting.targets" PackagePath="buildMultiTargeting\$(PackageId).targets" Pack="true" />
+    <None Include="T4.BuildTools.targets.buildschema.json" PackagePath="build\$(PackageId).targets.buildschema.json" Pack="true" />
+    <None Include="T4PropertyPage.xaml" PackagePath="build\T4PropertyPage.xaml" Pack="true" />
+    <None Include="T4PropertySchema.xaml" PackagePath="build\T4PropertyPageSchema.xaml" Pack="true" />
+  </ItemGroup>
+
+  <Target Name="AddCopyLocalToPack" BeforeTargets="_GetBuildOutputFilesWithTfm" DependsOnTargets="ReferenceCopyLocalPathsOutputGroup">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPathsOutputGroupOutput)" TargetFramework="$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- https://github.com/dotnet/msbuild/issues/4751-->
+  <PropertyGroup>
+    <CoreCompileDependsOn>PrepareResources;$(CompileDependsOn)</CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource
+      Update="@(EmbeddedResource)"
+      StronglyTypedLanguage="CSharp"
+      StronglyTypedClassName="%(Filename)"
+      StronglyTypedNamespace="$(RootNamespace)"
+      Generator="MSBuild:Compile"
+      StronglyTypedFileName="$(IntermediateOutputPath)\%(StronglyTypedNamespace).%(StronglyTypedClassName).Designer.cs"
+      LogicalName="%(StronglyTypedNamespace).%(StronglyTypedClassName).resources" />
+  </ItemGroup>
+</Project>

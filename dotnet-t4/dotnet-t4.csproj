@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>t4</AssemblyName>
+    <PackageId>dotnet-t4</PackageId>
+    <PackAsTool>True</PackAsTool>
+    <ToolCommandName>t4</ToolCommandName>
+    <RollForward>LatestMajor</RollForward>
+    <Description>Command-line tool for processing T4 templates, a general-purpose way to generate text or code files using C#</Description>
+    <RootNamespace>Mono.TextTemplating</RootNamespace>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
+    <StartAction>Project</StartAction>
+    <StartArguments>test.tt</StartArguments>
+    <StartWorkingDirectory>.</StartWorkingDirectory>
+    <ExternalConsole>false</ExternalConsole>
+  </PropertyGroup>
+</Project>

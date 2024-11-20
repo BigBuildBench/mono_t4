@@ -1,0 +1,64 @@
+name: Build
+
+on: workflow_call
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }} (${{ matrix.config }})
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        config: [ Release, Debug ]
+    runs-on: ${{ matrix.os }}
+
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 0 # GitVersioning needs deep clone
+
+    - name: Set up dotnet
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: |
+          6.0.x
+          7.0.x
+
+    - name: Find MSBuild
+      if: startsWith(matrix.os, 'windows')
+      uses: microsoft/setup-msbuild@v1.1.0
+
+    - uses: actions/cache@v3
+      with:
+        path: ${{ env.NUGET_PACKAGES }}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore
+      run: dotnet restore -p:Configuration=${{ matrix.config }}
+
+    - name: Build
+      run: dotnet build Mono.TextTemplating.sln -c ${{ matrix.config }} --no-restore
+
+    - name: Test
+      run: dotnet test --no-build -c ${{ matrix.config }} --logger trx --results-directory "TestResults-${{ matrix.os }}-${{ matrix.config }}"
+
+#      run: dotnet test -c ${{ matrix.config }} --no-build --blame-hang-timeout 5m --diag TestResults-${{ matrix.config }}-${{ matrix.os }}/Log/test_log.txt --logger trx --results-directory TestResults-${{ matrix.config }}-${{ matrix.os }}
+
+    - name: Upload Test Results
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: "TestResults-${{ matrix.os }}-${{ matrix.config }}"
+        path: "TestResults-${{ matrix.os }}-${{ matrix.config }}"
+
+    - uses: actions/upload-artifact@v3
+      if: matrix.config == 'Release' && startsWith(matrix.os, 'windows')
+      with:
+        name: packages
+        path: packages/Release
+        if-no-files-found: error

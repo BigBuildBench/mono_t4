@@ -1,0 +1,48 @@
+<Project>
+  <!-- hide T4 key/value pairs and other non-file items from the solution tree -->
+  <ItemDefinitionGroup>
+    <T4ParameterValues>
+      <Visible>False</Visible>
+    </T4ParameterValues>
+    <T4Argument>
+      <Visible>False</Visible>
+    </T4Argument>
+    <DirectiveProcessor>
+      <Visible>False</Visible>
+    </DirectiveProcessor>
+    <T4ReferencePath>
+      <Visible>False</Visible>
+    </T4ReferencePath>
+    <T4IncludePath>
+      <Visible>False</Visible>
+    </T4IncludePath>
+    <T4AssemblyReference>
+      <Visible>False</Visible>
+    </T4AssemblyReference>
+  </ItemDefinitionGroup>
+
+  <!-- transform on save in VS -->
+  <ItemDefinitionGroup>
+    <T4Transform>
+      <Generator>MSBuild:TransformTemplates</Generator>
+    </T4Transform>
+    <T4Preprocess>
+      <Generator>MSBuild:TransformTemplates</Generator>
+    </T4Preprocess>
+  </ItemDefinitionGroup>
+
+  <!--
+  Make these items show up as a build action in VS.
+  The PropertyPageSchema also seems to be necessary to make Generator metadata work.
+  -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)T4PropertyPage.xaml">
+        <Context>Project</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)T4PropertySchema.xaml">
+        <Context>File;BrowseObject</Context>
+    </PropertyPageSchema>
+    <AvailableItemName Include="T4Preprocess" />
+    <AvailableItemName Include="T4Transform" />
+  </ItemGroup>
+</Project>

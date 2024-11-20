@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1591;1573</NoWarn>
+    <PackageId>Mono.TextTemplating.Console</PackageId>
+    <IsTool>True</IsTool>
+    <Description>Command-line T4 text transform tool.</Description>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net6.0;net472</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>1591;1573</NoWarn>
+    <TFxId>$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)'))</TFxId>
+    <DefineConstants Condition="'$(TFxId)'=='.NETFramework'">$(DefineConstants);FEATURE_APPDOMAINS</DefineConstants>
+    <DefineConstants Condition="'$(TFxId)'=='.NETCoreApp'">$(DefineConstants);FEATURE_ASSEMBLY_LOAD_CONTEXT</DefineConstants>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Mono.TextTemplating</PackageId>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <Description>Embeddable engine for the T4 templating language, a general-purpose way to generate text or code files using C#</Description>
+    <PackageValidationBaselineVersion>2.2.1</PackageValidationBaselineVersion>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <!-- ignore the _._ files that suppress compat targets in newer frameworks -->
+    <NoWarn>$(NoWarn);NU5129</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Mono.TextTemplating.Tests" />
+    <InternalsVisibleTo Include="Mono.TextTemplating.Build" />
+    <InternalsVisibleTo Include="Mono.TextTemplating.Roslyn" />
+  </ItemGroup>
+</Project>
